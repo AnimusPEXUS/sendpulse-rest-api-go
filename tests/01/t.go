@@ -10,14 +10,10 @@ import (
 
 func main() {
 
-	log.Print("getting token..")
-
 	m, err := sendpulse.NewSendPulse("", "")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Print("got token ", m.Token())
 
 	log.Print("sending message..")
 
