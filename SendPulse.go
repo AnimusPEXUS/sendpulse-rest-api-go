@@ -15,9 +15,10 @@ import (
 )
 
 const SENDPULSE_URI = `https://api.sendpulse.com`
-const DEBUG = false
 
 type SendPulse struct {
+	Debug bool
+
 	client_id             string
 	client_secret         string
 	token                 *types.TokenResponse
@@ -28,15 +29,16 @@ type SendPulse struct {
 	http_client *http.Client
 }
 
-func NewSendPulse(client_id, client_secret string) *SendPulse {
+func NewSendPulse(client_id, client_secret string) (*SendPulse, error) {
 	self := &SendPulse{
+		Debug:                 false,
 		client_id:             client_id,
 		client_secret:         client_secret,
 		token_expiration_time: time.Now(),
 		// signin_error:          nil,
 		http_client: &http.Client{},
 	}
-	return self
+	return self, nil
 }
 
 func (self *SendPulse) IsTokenUpdateRequired() bool {
@@ -98,13 +100,13 @@ func (self *SendPulse) sendRequest(
 	if method == "POST" && params != nil {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		b := params.Encode()
-		if DEBUG {
+		if self.Debug {
 			log.Print("body ", b)
 		}
 		req.Body = ioutil.NopCloser(strings.NewReader(b))
 	}
 
-	if DEBUG {
+	if self.Debug {
 		log.Print("header ", req.Header)
 	}
 
@@ -127,7 +129,7 @@ func (self *SendPulse) updateToken() error {
 	}
 
 	if resp.StatusCode != 200 {
-		if DEBUG {
+		if self.Debug {
 			data, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				return err

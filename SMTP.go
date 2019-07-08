@@ -21,7 +21,7 @@ func (self *SendPulse) SmtpEmailsPost(email *types.SendPulseSendEmailStruct) (*h
 		s = string(b)
 	}
 
-	if DEBUG {
+	if self.Debug {
 		log.Print("email json ", s)
 	}
 
